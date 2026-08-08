@@ -42,13 +42,15 @@
     position:sticky; top:0; z-index:10; background:rgba(10,10,12,0.85); backdrop-filter:blur(8px);
     border-bottom:1px solid var(--line); padding:14px 16px;
   }
-  .headtop{display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; gap:12px; flex-wrap:wrap;}
+  .headtop{display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; gap:10px; flex-wrap:nowrap;}
+  .headtop-right{display:flex; align-items:center; gap:10px; flex:none;}
   h1{
-    font-size:clamp(26px,5vw,40px); margin:0; background:linear-gradient(90deg,var(--accent),#4ad9ff);
+    font-size:clamp(18px,5.5vw,40px); margin:0; background:linear-gradient(90deg,var(--accent),#4ad9ff);
     -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0;
   }
-  .clock{font-size:12px; color:var(--muted); font-family:monospace;}
-  .daytabs{display:flex; background:var(--panel2); border-radius:8px; padding:4px; gap:4px;}
+  .clock{font-size:11px; color:var(--muted); font-family:monospace; white-space:nowrap;}
+  .daytabs{display:flex; background:var(--panel2); border-radius:8px; padding:4px; gap:4px; flex:none;}
   .daytab{
     font-family:'Anton',sans-serif; font-size:14px; letter-spacing:.03em; border:none; background:transparent;
     color:var(--muted); padding:7px 18px; cursor:pointer; border-radius:5px; text-transform:uppercase;
@@ -68,7 +70,7 @@
   }
   .pastbtn.on{background:rgba(192,132,252,0.18); border-color:var(--live); color:#e9d5ff;}
 
-  .legend{display:flex; gap:16px; font-size:12px; color:var(--muted); margin:16px 0; flex-wrap:wrap;}
+  .legend{display:flex; align-items:center; gap:16px; font-size:12px; color:var(--muted); margin:16px 0; flex-wrap:wrap;}
   .legend span{display:inline-flex; align-items:center; gap:6px;}
   .dot{width:8px; height:8px; border-radius:2px;}
 
@@ -154,7 +156,7 @@
 <header>
   <div class="headtop">
     <h1>BRAVE! FACTORY</h1>
-    <div style="display:flex; align-items:center; gap:14px;">
+    <div class="headtop-right">
       <span class="clock" id="clock"></span>
       <div class="daytabs">
         <button class="daytab active" data-day="sat">Sat</button>
@@ -164,7 +166,6 @@
   </div>
   <div class="filters">
     <div class="venues" id="venues"></div>
-    <button class="pastbtn on" id="pastToggle">Hide past</button>
   </div>
 </header>
 
@@ -173,6 +174,7 @@
     <span><span class="typeicon live"></span>Live</span>
     <span><span class="typeicon dj"></span>DJ set</span>
     <span style="opacity:.6"><span class="dot" style="background:#666"></span>Past</span>
+    <button class="pastbtn on" id="pastToggle" style="margin-left:auto;">Hide past</button>
   </div>
   <div id="content"></div>
 </div>
@@ -193,9 +195,9 @@
 <footer>
   <div class="thanks">✨ HOPE YOU HAD A GREAT TIME ✨</div>
   <div class="partner-logos">
-    <img src="aurora.png" alt="Aurora" class="partner-logo">
+    <!-- <img src="aurora.png" alt="Aurora" class="partner-logo">
     <img src="absolut.png" alt="Absolut" class="partner-logo">
-    <img src="megogo.png" alt="Megogo" class="partner-logo">
+    <img src="megogo.png" alt="Megogo" class="partner-logo"> -->
     <img src="uklon.png" alt="Uklon" class="partner-logo">
   </div>
 </footer>
