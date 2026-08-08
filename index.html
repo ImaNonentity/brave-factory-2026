@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BRAVE! FACTORY — Timetable</title>
+<title>BRAVE! FACTORY — Timetable (TEST)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -18,6 +18,7 @@
     --text:#f0efe9; --muted:#8b8c94; --accent:#cfff3d; --live:#c084fc; --dj:#60a5fa;
     --c-depo:#ff6b4a; --c-pav:#4ad9ff; --c-garden:#9eff4a; --c-bb:#c24aff;
     --c-angar:#ffd24a; --c-aud:#ff4a8f; --c-new:#5c7aff;
+    --bg-pos:right top; --bg-size:cover; --overlay-a:0.45; --overlay-b:0.6;
   }
   *{box-sizing:border-box;}
   body{
@@ -32,8 +33,8 @@
     background:
       radial-gradient(ellipse 900px 500px at 15% -10%, rgba(207,255,61,0.06), transparent 60%),
       radial-gradient(ellipse 700px 500px at 100% 0%, rgba(74,217,255,0.05), transparent 60%),
-      linear-gradient(rgba(6,6,8,0.45), rgba(6,6,8,0.6)),
-      url('https://static-image-2.s3.us-west-1.amazonaws.com/blog_images/REJ07610+2.png') right top / cover no-repeat;
+      linear-gradient(rgba(6,6,8,var(--overlay-a)), rgba(6,6,8,var(--overlay-b))),
+      url('https://static-image-2.s3.us-west-1.amazonaws.com/blog_images/REJ07610+2.png') var(--bg-pos) / var(--bg-size) no-repeat;
   }
   .display{font-family:'Anton', sans-serif; text-transform:uppercase; letter-spacing:.01em;}
   .wrap{max-width:1100px; margin:0 auto; padding:0 16px 60px;}
@@ -42,12 +43,12 @@
     position:sticky; top:0; z-index:10; background:rgba(10,10,12,0.85); backdrop-filter:blur(8px);
     border-bottom:1px solid var(--line); padding:14px 16px;
   }
-  .headtop{display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; gap:10px; flex-wrap:nowrap;}
-  .headtop-right{display:flex; align-items:center; gap:10px; flex:none;}
+  .headtop{display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; gap:10px; flex-wrap:wrap;}
+  .headtop-right{display:flex; align-items:center; gap:10px; flex:none; margin-left:auto;}
   h1{
-    font-size:clamp(18px,5.5vw,40px); margin:0; background:linear-gradient(90deg,var(--accent),#4ad9ff);
+    font-size:clamp(22px,6.5vw,40px); margin:0; background:linear-gradient(90deg,var(--accent),#4ad9ff);
     -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
-    white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0;
+    white-space:nowrap;
   }
   .clock{font-size:11px; color:var(--muted); font-family:monospace; white-space:nowrap;}
   .daytabs{display:flex; background:var(--panel2); border-radius:8px; padding:4px; gap:4px; flex:none;}
@@ -195,16 +196,84 @@
 <footer>
   <div class="thanks">✨ HOPE YOU HAD A GREAT TIME ✨</div>
   <div class="partner-logos">
-    <!-- <img src="aurora.png" alt="Aurora" class="partner-logo">
+    <img src="aurora.png" alt="Aurora" class="partner-logo">
     <img src="absolut.png" alt="Absolut" class="partner-logo">
-    <img src="megogo.png" alt="Megogo" class="partner-logo"> -->
+    <img src="megogo.png" alt="Megogo" class="partner-logo">
     <img src="uklon.png" alt="Uklon" class="partner-logo">
   </div>
 </footer>
 
+<div id="bgPanel" style="position:fixed; bottom:12px; right:12px; z-index:999; background:rgba(10,10,12,0.92); border:1px solid rgba(255,255,255,0.15); border-radius:10px; padding:10px; font-family:monospace; font-size:11px; color:#f0efe9; max-width:220px; backdrop-filter:blur(6px);">
+  <div style="font-weight:bold; margin-bottom:6px; color:#cfff3d;">BG TEST PANEL</div>
+  <div style="margin-bottom:4px; opacity:.7;">position:</div>
+  <div style="display:flex; flex-wrap:wrap; gap:4px; margin-bottom:8px;">
+    <button class="bgbtn" data-prop="--bg-pos" data-val="left top">left top</button>
+    <button class="bgbtn" data-prop="--bg-pos" data-val="center top">center top</button>
+    <button class="bgbtn active" data-prop="--bg-pos" data-val="right top">right top</button>
+    <button class="bgbtn" data-prop="--bg-pos" data-val="left center">left center</button>
+    <button class="bgbtn" data-prop="--bg-pos" data-val="center center">center center</button>
+    <button class="bgbtn" data-prop="--bg-pos" data-val="right center">right center</button>
+    <button class="bgbtn" data-prop="--bg-pos" data-val="left bottom">left bottom</button>
+    <button class="bgbtn" data-prop="--bg-pos" data-val="center bottom">center bottom</button>
+    <button class="bgbtn" data-prop="--bg-pos" data-val="right bottom">right bottom</button>
+    <button class="bgbtn" data-prop="--bg-pos" data-val="70% 15%">70% 15%</button>
+    <button class="bgbtn" data-prop="--bg-pos" data-val="85% 30%">85% 30%</button>
+  </div>
+  <div style="margin-bottom:4px; opacity:.7;">size:</div>
+  <div style="display:flex; gap:4px; margin-bottom:8px;">
+    <button class="bgbtn" data-prop="--bg-size" data-val="cover">cover</button>
+    <button class="bgbtn" data-prop="--bg-size" data-val="contain">contain</button>
+    <button class="bgbtn" data-prop="--bg-size" data-val="150%">150%</button>
+    <button class="bgbtn" data-prop="--bg-size" data-val="200%">200%</button>
+  </div>
+  <div style="margin-bottom:4px; opacity:.7;">overlay darkness:</div>
+  <div style="display:flex; gap:4px; margin-bottom:8px;">
+    <button class="bgbtn" data-overlay="0.2,0.35">light</button>
+    <button class="bgbtn" data-overlay="0.45,0.6">default</button>
+    <button class="bgbtn" data-overlay="0.65,0.8">dark</button>
+  </div>
+  <div id="bgCurrent" style="opacity:.6; font-size:10px; word-break:break-all;">right top / cover</div>
+</div>
+
+<style>
+  .bgbtn{
+    font-family:monospace; font-size:10px; padding:4px 7px; border-radius:5px;
+    border:1px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.06);
+    color:#f0efe9; cursor:pointer;
+  }
+  .bgbtn:hover{background:rgba(255,255,255,0.14);}
+  .bgbtn.active{background:#cfff3d; color:#0a0a0c; border-color:#cfff3d;}
+</style>
+
+<script>
+  document.querySelectorAll('#bgPanel .bgbtn[data-prop]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const prop = btn.dataset.prop;
+      document.querySelectorAll(`#bgPanel .bgbtn[data-prop="${prop}"]`).forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      document.documentElement.style.setProperty(prop, btn.dataset.val);
+      updateCurrent();
+    });
+  });
+  document.querySelectorAll('#bgPanel .bgbtn[data-overlay]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const [a,b] = btn.dataset.overlay.split(',');
+      document.documentElement.style.setProperty('--overlay-a', a);
+      document.documentElement.style.setProperty('--overlay-b', b);
+    });
+  });
+  function updateCurrent(){
+    const pos = getComputedStyle(document.documentElement).getPropertyValue('--bg-pos').trim();
+    const size = getComputedStyle(document.documentElement).getPropertyValue('--bg-size').trim();
+    document.getElementById('bgCurrent').textContent = `${pos} / ${size}`;
+  }
+  updateCurrent();
+</script>
+
 <script>
 /* EDIT ME: real calendar dates of the festival, for the "happening now" logic */
-const DAY_DATES = { sat: '2026-08-15', sun: '2026-08-16' };
+/* TEST MODE: sat = today (Aug 8), sun = tomorrow (Aug 9) — for live real-time testing */
+const DAY_DATES = { sat: '2026-08-08', sun: '2026-08-09' };
 
 const VENUES = ['ALL','Depo','Pavilion 4','Garden','Black Box','Angar','Audience','New One'];
 const VENUE_COLOR = {
