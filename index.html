@@ -73,19 +73,21 @@
   .filters{display:flex; flex-wrap:wrap; justify-content:space-between; gap:10px; align-items:center;}
   .venues{display:flex; flex-wrap:wrap; gap:6px;}
   .vbtn{
-    font-size:14px; padding:6px 14px; border-radius:99px; border:1px solid var(--line);
+    font-size:12px; padding:4px 8px; border-radius:99px; border:1px solid var(--line);
     background:rgba(19,19,24,0.5); color:var(--muted); cursor:pointer;
     font-family:'Ermilov','Anton',sans-serif;
   }
   .vbtn.active{font-weight:600;}
   .pastbtn{
-    font-size:14px; padding:6px 14px; border-radius:99px; border:1px solid var(--line);
+    font-size:12px; padding:4px 8px; border-radius:99px; border:1px solid var(--line);
     background:rgba(19,19,24,0.5); color:var(--muted); cursor:pointer;
     font-family:'Ermilov','Anton',sans-serif;
   }
   .pastbtn.on{background:rgba(207,255,61,0.18); border-color:var(--accent); color:var(--accent);}
 
-  .legend{display:flex; align-items:center; gap:16px; font-size:12px; color:var(--muted); margin:16px 0; flex-wrap:wrap;}
+  .legend{display:flex; align-items:center; gap:12px; font-size:12px; color:var(--muted); margin:16px 0; flex-wrap:nowrap; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none;}
+  .legend::-webkit-scrollbar{display:none;}
+  .legend span{white-space:nowrap;}
   .legend span{display:inline-flex; align-items:center; gap:6px;}
   .dot{width:8px; height:8px; border-radius:2px;}
 
@@ -199,9 +201,9 @@
     <span><span class="typeicon live"></span>Live</span>
     <span><span class="typeicon dj"></span>DJ set</span>
     <span style="opacity:.6"><span class="dot" style="background:#666"></span>Past</span>
-    <div style="display:flex; gap:8px; margin-left:auto; flex:none;">
-      <button class="pastbtn" id="favToggle">☆ My picks</button>
-      <button class="pastbtn on" id="pastToggle">Hide past</button>
+    <div style="display:flex; gap:8px; margin-left:auto; flex:none; white-space:nowrap;">
+      <button class="pastbtn" id="favToggle" style="white-space:nowrap;">☆ My picks</button>
+      <button class="pastbtn" id="pastToggle" style="white-space:nowrap;">Show past</button>
     </div>
   </div>
   <div id="content"></div>
@@ -320,19 +322,23 @@ function endTimeStr(time){
   return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
 }
 
-function getRange(ev, day){
+function getEnd(ev, day){
   const list = sameVenueSorted(day, ev.venue);
   const idx = list.findIndex(e=>e.time===ev.time && e.artist===ev.artist);
   const next = list[idx+1];
-  return next ? `${ev.time}–${next.time}` : `${ev.time}–${endTimeStr(ev.time)}`;
+  return next ? eventDate(day, next.time) : eventDate(day, endTimeStr(ev.time));
+}
+
+function getRange(ev, day){
+  const end = getEnd(ev, day);
+  const h = String(end.getHours()).padStart(2,'0');
+  const m = String(end.getMinutes()).padStart(2,'0');
+  return `${ev.time}–${h}:${m}`;
 }
 
 function getStatus(ev, day, now){
   const start = eventDate(day, ev.time);
-  const list = sameVenueSorted(day, ev.venue);
-  const idx = list.findIndex(e=>e.time===ev.time && e.artist===ev.artist);
-  const next = list[idx+1];
-  const end = eventDate(day, next ? next.time : endTimeStr(ev.time));
+  const end = getEnd(ev, day);
   if(now>=start && now<end) return 'current';
   if(now>=end) return 'past';
   return 'future';
@@ -452,8 +458,8 @@ document.querySelectorAll('.daytab').forEach(btn=>{
 
 document.getElementById('pastToggle').addEventListener('click', (e)=>{
   state.hidePast = !state.hidePast;
-  e.target.textContent = state.hidePast ? 'Hide past' : 'Show past';
-  e.target.classList.toggle('on', state.hidePast);
+  e.target.textContent = state.hidePast ? 'Show past' : 'Hide past';
+  e.target.classList.toggle('on', !state.hidePast);
   render();
 });
 
