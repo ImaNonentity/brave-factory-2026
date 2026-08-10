@@ -13,6 +13,12 @@
     font-weight:400 700;
     font-display:swap;
   }
+  @font-face{
+    font-family:'Ermilov';
+    src:url('./Ermilov-bold.otf') format('opentype');
+    font-weight:700;
+    font-display:swap;
+  }
   :root{
     --bg:#0a0a0c; --panel:#131318; --panel2:#18181f; --line:rgba(255,255,255,0.1);
     --text:#f0efe9; --muted:#8b8c94; --accent:#cfff3d; --live:#c084fc; --dj:#60a5fa;
@@ -35,7 +41,7 @@
       linear-gradient(rgba(6,6,8,0.2), rgba(6,6,8,0.35)),
       url('https://static-image-2.s3.us-west-1.amazonaws.com/blog_images/REJ07610+2.png') right bottom / contain no-repeat;
   }
-  .display{font-family:'Anton', sans-serif; text-transform:uppercase; letter-spacing:.01em;}
+  .display{font-family:'Ermilov','Anton', sans-serif; text-transform:uppercase; letter-spacing:.01em;}
   .wrap{max-width:1100px; margin:0 auto; padding:0 16px 60px;}
 
   header{
@@ -45,14 +51,19 @@
   .headtop{display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; gap:8px; flex-wrap:nowrap;}
   .headtop-right{display:flex; align-items:center; gap:8px; flex:none; margin-left:auto;}
   h1{
-    font-size:clamp(15px,5.2vw,32px); margin:0; background:linear-gradient(90deg,var(--accent),#4ad9ff);
+    font-size:clamp(15px,5.2vw,32px); margin:0;
+    background:linear-gradient(90deg,var(--accent),#4ad9ff,var(--live),#ff4a8f,#ffd24a,var(--accent));
+    background-size:300% 100%;
     -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
     white-space:nowrap; min-width:0; flex:0 1 auto;
+    font-family:'Ermilov','Anton',sans-serif; text-transform:uppercase; letter-spacing:.01em;
+    animation:titleshift 25s linear infinite;
   }
+  @keyframes titleshift{0%{background-position:0% 50%;}100%{background-position:300% 50%;}}
   .clock{font-size:10px; color:var(--muted); font-family:monospace; white-space:nowrap;}
   .daytabs{display:flex; background:var(--panel2); border-radius:8px; padding:3px; gap:3px; flex:none;}
   .daytab{
-    font-family:'Anton',sans-serif; font-size:12px; letter-spacing:.03em; border:none; background:transparent;
+    font-family:'Ermilov','Anton',sans-serif; font-size:12px; letter-spacing:.03em; border:none; background:transparent;
     color:var(--muted); padding:6px 12px; cursor:pointer; border-radius:5px; text-transform:uppercase;
   }
   .daytab.active{background:var(--accent); color:#0a0a0c;}
@@ -67,20 +78,24 @@
     font-size:12px; padding:5px 12px; border-radius:99px; border:1px solid var(--line);
     background:rgba(19,19,24,0.5); color:var(--muted); cursor:pointer;
   }
-  .vbtn.active{background:var(--accent); border-color:var(--accent); color:#0a0a0c; font-weight:600;}
+  .vbtn.active{font-weight:600;}
   .pastbtn{
     font-size:12px; padding:5px 12px; border-radius:99px; border:1px solid var(--line);
     background:rgba(19,19,24,0.5); color:var(--muted); cursor:pointer;
   }
-  .pastbtn.on{background:rgba(192,132,252,0.18); border-color:var(--live); color:#e9d5ff;}
+  .pastbtn.on{background:rgba(255,255,255,0.1); border-color:var(--text); color:var(--text);}
 
   .legend{display:flex; align-items:center; gap:16px; font-size:12px; color:var(--muted); margin:16px 0; flex-wrap:wrap;}
   .legend span{display:inline-flex; align-items:center; gap:6px;}
   .dot{width:8px; height:8px; border-radius:2px;}
 
   .live-panel{
-    border:2px solid var(--accent); border-radius:10px; padding:18px;
-    background:linear-gradient(90deg, rgba(207,255,61,0.08), rgba(74,217,255,0.06));
+    border:2px solid transparent; border-radius:10px; padding:18px;
+    background:
+      linear-gradient(rgba(10,10,12,0.92),rgba(10,10,12,0.92)) padding-box,
+      linear-gradient(90deg,var(--accent),#4ad9ff,var(--live),#ff4a8f,#ffd24a,var(--accent)) border-box;
+    background-size:100% 100%, 300% 100%;
+    animation:titleshift 25s linear infinite;
     margin-bottom:16px; position:relative; overflow:hidden;
   }
   .live-panel::before{
@@ -90,15 +105,17 @@
   .live-panel > *{position:relative; z-index:1;}
   @keyframes slide{0%,100%{transform:translateX(-25px);}50%{transform:translateX(25px);}}
   .live-badge{
-    display:inline-flex; align-items:center; gap:7px; background:var(--accent); color:#0a0a0c;
+    display:inline-flex; align-items:center; gap:7px; color:#0a0a0c;
+    background:linear-gradient(90deg,var(--accent),#4ad9ff,var(--live),#ff4a8f,#ffd24a,var(--accent));
+    background-size:300% 100%; animation:titleshift 25s linear infinite;
     padding:5px 12px; border-radius:99px; font-size:11px; font-weight:700; letter-spacing:.05em; margin-bottom:12px;
   }
-  .live-dot{width:7px; height:7px; border-radius:50%; background:#0a0a0c; animation:pulse 1.4s infinite;}
+  .live-dot{width:7px; height:7px; border-radius:50%; background:#ff2b2b; animation:pulse 1.4s infinite;}
   @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
 
   .slot{border:1px solid var(--line); border-radius:10px; padding:16px; background:rgba(19,19,24,0.5); backdrop-filter:blur(6px); margin-bottom:14px;}
   .slot.past{opacity:.45; background:rgba(0,0,0,0.3);}
-  .slot .time{font-family:'Anton',sans-serif; font-size:19px; color:var(--muted); margin-bottom:10px;}
+  .slot .time{font-family:'Ermilov','Anton',sans-serif; font-size:19px; color:var(--muted); margin-bottom:10px;}
 
   .grid3{display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:10px;}
   .card{
@@ -117,7 +134,7 @@
     display:flex; align-items:center; justify-content:center; z-index:50; padding:16px;
   }
   .modal{background:var(--panel2); border:1px solid var(--line); border-radius:10px; max-width:400px; width:100%; padding:22px;}
-  .modal h3{margin:0 0 6px; font-family:'Anton',sans-serif; font-size:22px;}
+  .modal h3{margin:0 0 6px; font-family:'Ermilov','Anton',sans-serif; font-size:22px;}
   .modal .sub{font-size:13px; color:var(--muted); display:flex; align-items:center; gap:8px; margin-bottom:12px;}
   .modal .desc{font-size:13px; color:var(--muted); font-style:italic;}
   .modal .close{position:absolute; margin-left:auto;}
@@ -133,7 +150,7 @@
     padding:28px 16px 32px;
   }
   footer .thanks{
-    text-align:center; font-family:'Anton', sans-serif; font-size:15px;
+    text-align:center; font-family:'Ermilov','Anton', sans-serif; font-size:15px;
     letter-spacing:.05em; color:var(--accent); margin-bottom:20px;
   }
   .partner-logos{
@@ -199,20 +216,18 @@
 <footer>
   <div class="thanks">✨ HOPE YOU HAD A GREAT TIME ✨</div>
   <div class="partner-logos">
-    <img src="aurora.png" alt="Aurora" class="partner-logo">
-    <img src="absolut.png" alt="Absolut" class="partner-logo">
-    <img src="megogo.png" alt="Megogo" class="partner-logo">
     <img src="uklon.png" alt="Uklon" class="partner-logo">
   </div>
 </footer>
 
 <script>
 /* TEST MODE: sat = today, sun = tomorrow — for live real-time testing. Change back to real festival dates before launch. */
-const DAY_DATES = { sat: '2026-08-09', sun: '2026-08-10' };
+const DAY_DATES = { sat: '2026-08-10', sun: '2026-08-11' };
 
 const VENUES = ['ALL','Depo','Pavilion 4','Garden','Black Box','Angar','Audience','New One'];
 const VENUE_COLOR = {
-  'Depo':'#ff6b4a','Pavilion 4':'#4ad9ff','Garden':'#9eff4a','Black Box':'#c24aff',
+  'ALL':'#cfff3d',
+  'Depo':'#ff6b4a','Pavilion 4':'#4ad9ff','Garden':'#22c55e','Black Box':'#c24aff',
   'Angar':'#ffd24a','Audience':'#ff4a8f','New One':'#5c7aff'
 };
 
@@ -305,7 +320,14 @@ function typeIconHTML(type){
 
 function renderVenues(){
   const el = document.getElementById('venues');
-  el.innerHTML = VENUES.map(v=>`<button class="vbtn ${v===state.venue?'active':''}" data-v="${v}">${v}</button>`).join('');
+  el.innerHTML = VENUES.map(v=>{
+    const c = VENUE_COLOR[v];
+    const active = v===state.venue;
+    const style = active
+      ? `background:${c}; border-color:${c}; color:#0a0a0c;`
+      : `border-color:${c}55; color:${c};`;
+    return `<button class="vbtn ${active?'active':''}" data-v="${v}" style="${style}">${v}</button>`;
+  }).join('');
   el.querySelectorAll('.vbtn').forEach(b=>b.addEventListener('click',()=>{
     state.venue = b.dataset.v; render();
   }));
@@ -339,8 +361,10 @@ function render(){
   const now = new Date();
   document.getElementById('clock').textContent = now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
 
-  let events = DATA[state.day].filter(e=> state.venue==='ALL' || e.venue===state.venue);
-  if(state.hidePast) events = events.filter(e=> getStatus(e,state.day,now) !== 'past');
+  const venueEvents = DATA[state.day].filter(e=> state.venue==='ALL' || e.venue===state.venue);
+  let events = state.hidePast ? venueEvents.filter(e=> getStatus(e,state.day,now) !== 'past') : venueEvents;
+  // never show an empty screen: if hiding past wiped out everything (e.g. whole day already finished), fall back to showing it all
+  if(!events.length && venueEvents.length) events = venueEvents;
 
   const grouped = {};
   events.forEach(e=>{ (grouped[e.time] = grouped[e.time]||[]).push(e); });
@@ -368,7 +392,7 @@ function render(){
     </div>`;
   });
 
-  if(!currentEvents.length && !restTimes.length){
+  if(!venueEvents.length){
     html = `<div style="text-align:center; color:var(--muted); padding:40px;">No sets match this filter.</div>`;
   }
 
