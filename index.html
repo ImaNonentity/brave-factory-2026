@@ -212,7 +212,6 @@
         <h3 id="mArtist"></h3>
         <div class="sub" id="mSub"></div>
       </div>
-      <button class="closebtn" id="mClose">✕</button>
     </div>
     <button class="starbtn modal-star" id="mStar" aria-label="Toggle favorite">☆</button>
     <div class="desc" id="mDesc"></div>
@@ -473,7 +472,6 @@ document.getElementById('mStar').addEventListener('click', ()=>{
   render();
 });
 
-document.getElementById('mClose').addEventListener('click', ()=> document.getElementById('modalBg').classList.add('hidden'));
 document.getElementById('modalBg').addEventListener('click', (e)=>{ if(e.target.id==='modalBg') e.target.classList.add('hidden'); });
 
 setInterval(render, 60000);
