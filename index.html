@@ -26,6 +26,7 @@
     --c-angar:#ffd24a; --c-aud:#ff4a8f; --c-new:#5c7aff;
   }
   *{box-sizing:border-box;}
+  button, input, select, textarea{font-family:inherit;}
   body{
     margin:0; font-family:'UnitySans', 'Space Grotesk', system-ui, sans-serif; color:var(--text);
     background:var(--bg);
@@ -34,7 +35,8 @@
   }
   body::before{
     content:'';
-    position:fixed; inset:0; z-index:-1;
+    position:fixed; top:0; left:0; width:100%; z-index:-1;
+    height:100vh; height:100svh;
     background:
       radial-gradient(ellipse 900px 500px at 15% -10%, rgba(207,255,61,0.06), transparent 60%),
       radial-gradient(ellipse 700px 500px at 100% 0%, rgba(74,217,255,0.05), transparent 60%),
@@ -127,12 +129,13 @@
   }
   .starbtn:hover{color:var(--accent);}
   .starbtn.on{color:var(--accent);}
+  .modal-star{position:absolute; top:50%; right:16px; transform:translateY(-50%); font-size:24px;}
 
   .modal-bg{
     position:fixed; inset:0; background:rgba(0,0,0,0.65); backdrop-filter:blur(4px);
     display:flex; align-items:center; justify-content:center; z-index:50; padding:16px;
   }
-  .modal{background:var(--panel2); border:1px solid var(--line); border-radius:10px; max-width:400px; width:100%; padding:22px;}
+  .modal{background:var(--panel2); border:1px solid var(--line); border-radius:10px; max-width:400px; width:100%; padding:22px; position:relative;}
   .modal h3{margin:0 0 6px; font-family:'Ermilov','Anton',sans-serif; font-size:22px;}
   .modal .sub{font-size:13px; color:var(--muted); display:flex; align-items:center; gap:8px; margin-bottom:12px;}
   .modal .desc{font-size:13px; color:var(--muted); font-style:italic;}
@@ -209,11 +212,9 @@
         <h3 id="mArtist"></h3>
         <div class="sub" id="mSub"></div>
       </div>
-      <div style="display:flex; align-items:center; gap:8px;">
-        <button class="starbtn" id="mStar" style="position:static; font-size:22px;" aria-label="Toggle favorite">☆</button>
-        <button class="closebtn" id="mClose">✕</button>
-      </div>
+      <button class="closebtn" id="mClose">✕</button>
     </div>
+    <button class="starbtn modal-star" id="mStar" aria-label="Toggle favorite">☆</button>
     <div class="desc" id="mDesc"></div>
   </div>
 </div>
