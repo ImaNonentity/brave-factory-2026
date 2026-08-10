@@ -97,7 +97,8 @@
   .live-panel > *{position:relative; z-index:1;}
   @keyframes slide{0%,100%{transform:translateX(-25px);}50%{transform:translateX(25px);}}
   .live-badge{
-    display:inline-flex; align-items:center; gap:7px; background:var(--accent); color:#0a0a0c;
+    display:inline-flex; align-items:center; gap:7px; background:transparent; color:var(--accent);
+    border:1px solid var(--accent);
     padding:5px 12px; border-radius:99px; font-size:11px; font-weight:700; letter-spacing:.05em; margin-bottom:12px;
   }
   .live-dot{width:7px; height:7px; border-radius:50%; background:#ff2b2b; animation:pulse 1.4s infinite;}
@@ -110,14 +111,21 @@
   .grid3{display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:10px;}
   .card{
     border-left:3px solid #888; padding:8px 12px; border-radius:0 6px 6px 0; background:rgba(255,255,255,0.04);
-    cursor:pointer; transition:background .15s;
+    cursor:pointer; transition:background .15s; position:relative;
   }
   .card:hover{background:rgba(255,255,255,0.09);}
-  .card .venue{font-size:11px; color:var(--muted); display:flex; align-items:center; gap:6px; margin-bottom:3px;}
-  .card .artist{font-weight:600; font-size:13.5px; line-height:1.25;}
+  .card.starred{background:rgba(207,255,61,0.07);}
+  .card .venue{font-size:11px; color:var(--muted); display:flex; align-items:center; gap:6px; margin-bottom:3px; padding-right:22px;}
+  .card .artist{font-weight:600; font-size:13.5px; line-height:1.25; padding-right:22px;}
   .typeicon{width:12px; height:12px; flex:none; border-radius:50%;}
   .typeicon.live{background:var(--live); box-shadow:0 0 5px var(--live);}
   .typeicon.dj{background:var(--dj);}
+  .starbtn{
+    position:absolute; top:8px; right:8px; background:none; border:none; cursor:pointer;
+    font-size:16px; line-height:1; color:var(--line); padding:2px; z-index:2;
+  }
+  .starbtn:hover{color:var(--accent);}
+  .starbtn.on{color:var(--accent);}
 
   .modal-bg{
     position:fixed; inset:0; background:rgba(0,0,0,0.65); backdrop-filter:blur(4px);
@@ -185,6 +193,7 @@
     <span><span class="typeicon live"></span>Live</span>
     <span><span class="typeicon dj"></span>DJ set</span>
     <span style="opacity:.6"><span class="dot" style="background:#666"></span>Past</span>
+    <button class="pastbtn" id="favToggle">☆ My picks</button>
     <button class="pastbtn on" id="pastToggle" style="margin-left:auto;">Hide past</button>
   </div>
   <div id="content"></div>
@@ -197,7 +206,10 @@
         <h3 id="mArtist"></h3>
         <div class="sub" id="mSub"></div>
       </div>
-      <button class="closebtn" id="mClose">✕</button>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <button class="starbtn" id="mStar" style="position:static; font-size:22px;" aria-label="Toggle favorite">☆</button>
+        <button class="closebtn" id="mClose">✕</button>
+      </div>
     </div>
     <div class="desc" id="mDesc"></div>
   </div>
@@ -266,7 +278,24 @@ function buildData(){
 }
 const DATA = buildData();
 
-let state = { day:'sat', venue:'ALL', hidePast:true, modalEvent:null };
+let state = { day:'sat', venue:'ALL', hidePast:true, modalEvent:null, favOnly:false };
+
+/* --- favorites (starred artists), persisted in localStorage --- */
+const FAV_KEY = 'brave_factory_favs';
+function loadFavs(){
+  try{ return new Set(JSON.parse(localStorage.getItem(FAV_KEY)) || []); }
+  catch(e){ return new Set(); }
+}
+function saveFavs(){
+  try{ localStorage.setItem(FAV_KEY, JSON.stringify([...favs])); }catch(e){}
+}
+const favs = loadFavs();
+function favId(day, ev){ return `${day}::${ev.time}::${ev.venue}::${ev.artist}`; }
+function toggleFav(day, ev){
+  const id = favId(day, ev);
+  if(favs.has(id)) favs.delete(id); else favs.add(id);
+  saveFavs();
+}
 
 function eventDate(day, time){
   const [y,mo,d] = DAY_DATES[day].split('-').map(Number);
@@ -324,14 +353,22 @@ function renderVenues(){
 }
 
 function openModal(ev){
+  state.modalEvent = ev;
   document.getElementById('mArtist').textContent = ev.artist;
   document.getElementById('mSub').innerHTML = `<span>${getRange(ev,state.day)}</span><span>·</span><span>${ev.venue}</span>${typeIconHTML(ev.type)}`;
   document.getElementById('mDesc').textContent = ev.type==='live' ? 'Live set.' : 'DJ set.';
+  const isFav = favs.has(favId(state.day, ev));
+  const mStar = document.getElementById('mStar');
+  mStar.textContent = isFav ? '★' : '☆';
+  mStar.classList.toggle('on', isFav);
   document.getElementById('modalBg').classList.remove('hidden');
 }
 
 function cardHTML(ev){
-  return `<div class="card" style="border-left-color:${VENUE_COLOR[ev.venue]}" data-time="${ev.time}" data-venue="${ev.venue}" data-artist="${ev.artist.replace(/"/g,'&quot;')}">
+  const id = favId(state.day, ev);
+  const isFav = favs.has(id);
+  return `<div class="card ${isFav?'starred':''}" style="border-left-color:${VENUE_COLOR[ev.venue]}" data-time="${ev.time}" data-venue="${ev.venue}" data-artist="${ev.artist.replace(/"/g,'&quot;')}">
+    <button class="starbtn ${isFav?'on':''}" data-star="1" aria-label="Toggle favorite">${isFav ? '★' : '☆'}</button>
     <div class="venue">${ev.venue} ${typeIconHTML(ev.type)}</div>
     <div class="artist">${ev.artist}</div>
   </div>`;
@@ -339,10 +376,14 @@ function cardHTML(ev){
 
 function attachCardHandlers(container){
   container.querySelectorAll('.card').forEach(card=>{
-    card.addEventListener('click', ()=>{
-      const ev = DATA[state.day].find(e=>e.time===card.dataset.time && e.venue===card.dataset.venue && e.artist===card.dataset.artist);
-      if(ev) openModal(ev);
+    const ev = DATA[state.day].find(e=>e.time===card.dataset.time && e.venue===card.dataset.venue && e.artist===card.dataset.artist);
+    if(!ev) return;
+    card.querySelector('.starbtn').addEventListener('click', (e)=>{
+      e.stopPropagation();
+      toggleFav(state.day, ev);
+      render();
     });
+    card.addEventListener('click', ()=> openModal(ev));
   });
 }
 
@@ -351,7 +392,8 @@ function render(){
   const now = new Date();
   document.getElementById('clock').textContent = now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
 
-  const venueEvents = DATA[state.day].filter(e=> state.venue==='ALL' || e.venue===state.venue);
+  let venueEvents = DATA[state.day].filter(e=> state.venue==='ALL' || e.venue===state.venue);
+  if(state.favOnly) venueEvents = venueEvents.filter(e=> favs.has(favId(state.day,e)));
   let events = state.hidePast ? venueEvents.filter(e=> getStatus(e,state.day,now) !== 'past') : venueEvents;
   // never show an empty screen: if hiding past wiped out everything (e.g. whole day already finished), fall back to showing it all
   if(!events.length && venueEvents.length) events = venueEvents;
@@ -383,7 +425,9 @@ function render(){
   });
 
   if(!venueEvents.length){
-    html = `<div style="text-align:center; color:var(--muted); padding:40px;">No sets match this filter.</div>`;
+    html = state.favOnly
+      ? `<div style="text-align:center; color:var(--muted); padding:40px;">No picks yet — tap ☆ on a set to save it here.</div>`
+      : `<div style="text-align:center; color:var(--muted); padding:40px;">No sets match this filter.</div>`;
   }
 
   const content = document.getElementById('content');
@@ -405,6 +449,23 @@ document.getElementById('pastToggle').addEventListener('click', (e)=>{
   state.hidePast = !state.hidePast;
   e.target.textContent = state.hidePast ? 'Hide past' : 'Show past';
   e.target.classList.toggle('on', state.hidePast);
+  render();
+});
+
+document.getElementById('favToggle').addEventListener('click', (e)=>{
+  state.favOnly = !state.favOnly;
+  e.target.textContent = state.favOnly ? '★ My picks' : '☆ My picks';
+  e.target.classList.toggle('on', state.favOnly);
+  render();
+});
+
+document.getElementById('mStar').addEventListener('click', ()=>{
+  if(!state.modalEvent) return;
+  toggleFav(state.day, state.modalEvent);
+  const isFav = favs.has(favId(state.day, state.modalEvent));
+  const mStar = document.getElementById('mStar');
+  mStar.textContent = isFav ? '★' : '☆';
+  mStar.classList.toggle('on', isFav);
   render();
 });
 
