@@ -21,7 +21,7 @@
   }
   :root{
     --bg:#0a0a0c; --panel:#131318; --panel2:#18181f; --line:rgba(255,255,255,0.1);
-    --text:#f0efe9; --muted:#8b8c94; --accent:#cfff3d; --live:#c084fc; --dj:#60a5fa;
+    --text:#f0efe9; --muted:#8b8c94; --accent:#39ff14; --live:#c084fc; --dj:#60a5fa;
     --c-depo:#ff6b4a; --c-pav:#4ad9ff; --c-garden:#9eff4a; --c-bb:#c24aff;
     --c-angar:#ffd24a; --c-aud:#ff4a8f; --c-new:#5c7aff;
   }
@@ -38,7 +38,7 @@
     position:fixed; top:0; left:0; width:100%; z-index:-1;
     height:100vh; height:100svh;
     background:
-      radial-gradient(ellipse 900px 500px at 15% -10%, rgba(207,255,61,0.06), transparent 60%),
+      radial-gradient(ellipse 900px 500px at 15% -10%, rgba(57,255,20,0.06), transparent 60%),
       radial-gradient(ellipse 700px 500px at 100% 0%, rgba(74,217,255,0.05), transparent 60%),
       linear-gradient(rgba(6,6,8,0.2), rgba(6,6,8,0.35)),
       url('https://static-image-2.s3.us-west-1.amazonaws.com/blog_images/REJ07610+2.png') right bottom / contain no-repeat;
@@ -58,6 +58,7 @@
     white-space:nowrap; min-width:0; flex:0 1 auto;
     font-family:'Ermilov','Anton',sans-serif; text-transform:uppercase; letter-spacing:.01em;
   }
+  .logo-img{height:clamp(24px,7vw,44px); width:auto; display:block; flex:0 1 auto; min-width:0;}
   .clock{font-size:10px; color:var(--muted); font-family:monospace; white-space:nowrap;}
   .daytabs{display:flex; background:var(--panel2); border-radius:8px; padding:3px; gap:3px; flex:none;}
   .daytab{
@@ -83,7 +84,7 @@
     background:rgba(19,19,24,0.5); color:var(--muted); cursor:pointer;
     font-family:'Ermilov','Anton',sans-serif;
   }
-  .pastbtn.on{background:rgba(207,255,61,0.18); border-color:var(--accent); color:var(--accent);}
+  .pastbtn.on{background:rgba(57,255,20,0.18); border-color:var(--accent); color:var(--accent);}
 
   .legend{display:flex; align-items:center; gap:12px; font-size:12px; color:var(--muted); margin:16px 0; flex-wrap:nowrap; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none;}
   .legend::-webkit-scrollbar{display:none;}
@@ -94,11 +95,11 @@
   .live-panel{
     border:2px solid var(--accent); border-radius:10px; padding:18px;
     background:rgba(10,10,12,0.88);
-    box-shadow:0 0 24px rgba(207,255,61,0.25), inset 0 0 30px rgba(207,255,61,0.04);
+    box-shadow:0 0 24px rgba(57,255,20,0.25), inset 0 0 30px rgba(57,255,20,0.04);
     margin-bottom:16px; position:relative; overflow:hidden;
   }
   .live-panel::before{
-    content:''; position:absolute; inset:-50%; background-image:repeating-linear-gradient(-45deg, rgba(207,255,61,0.05) 0 40px, transparent 40px 100px);
+    content:''; position:absolute; inset:-50%; background-image:repeating-linear-gradient(-45deg, rgba(57,255,20,0.05) 0 40px, transparent 40px 100px);
     animation:slide 8s ease-in-out infinite;
   }
   .live-panel > *{position:relative; z-index:1;}
@@ -121,7 +122,7 @@
     cursor:pointer; transition:background .15s; position:relative;
   }
   .card:hover{background:rgba(255,255,255,0.09);}
-  .card.starred{background:rgba(207,255,61,0.07);}
+  .card.starred{background:rgba(57,255,20,0.07);}
   .card .venue{font-size:11px; color:var(--muted); display:flex; align-items:center; gap:6px; margin-bottom:3px; padding-right:30px; font-family:'Ermilov','Anton',sans-serif;}
   .card .artist{font-weight:600; font-size:13.5px; line-height:1.25; padding-right:30px;}
   .typeicon{width:12px; height:12px; flex:none; border-radius:50%;}
@@ -139,7 +140,15 @@
     position:fixed; inset:0; background:rgba(0,0,0,0.65); backdrop-filter:blur(4px);
     display:flex; align-items:center; justify-content:center; z-index:50; padding:16px;
   }
-  .modal{background:var(--panel2); border:1px solid var(--line); border-radius:10px; max-width:400px; width:100%; padding:22px; position:relative;}
+  .modal{background:var(--panel2); border:1px solid var(--line); border-radius:10px; max-width:400px; width:100%; padding:22px; position:relative; overflow:hidden;}
+  .modal-decor{
+    position:absolute; top:0; right:0; bottom:0; width:150px; z-index:0; pointer-events:none;
+    overflow:hidden;
+  }
+  .modal-decor img{
+    position:absolute; opacity:.16; filter:grayscale(0.3);
+  }
+  .modal-head, .modal .desc{position:relative; z-index:1;}
   .modal h3{margin:0 0 6px; font-family:'Ermilov','Anton',sans-serif; font-size:22px;}
   .modal .sub{font-size:13px; color:var(--muted); display:flex; align-items:center; gap:8px; margin-bottom:12px;}
   .modal .desc{font-size:13px; color:var(--muted); font-style:italic;}
@@ -182,12 +191,12 @@
 
 <header>
   <div class="headtop">
-    <h1>BRAVE! FACTORY</h1>
+    <img src="https://static-image-2.s3.us-west-1.amazonaws.com/BRAVE+FESTIVAL_schedule_2026_2_2.png" alt="BRAVE! FACTORY" class="logo-img">
     <div class="headtop-right">
       <span class="clock" id="clock"></span>
       <div class="daytabs">
-        <button class="daytab active" data-day="sat">Sat</button>
-        <button class="daytab" data-day="sun">Sun</button>
+        <button class="daytab active" data-day="sat">SAT 13</button>
+        <button class="daytab" data-day="sun">SUN 14</button>
       </div>
     </div>
   </div>
@@ -211,6 +220,11 @@
 
 <div class="modal-bg hidden" id="modalBg">
   <div class="modal">
+    <div class="modal-decor">
+      <img src="https://static-image-2.s3.us-west-1.amazonaws.com/temp/%D1%82%D1%80%D1%83%D0%B1%D0%B0+2.png" style="top:-20px; right:-30px; width:110px; transform:rotate(15deg);" alt="">
+      <img src="https://static-image-2.s3.us-west-1.amazonaws.com/temp/%D0%9A%D0%BE%D0%BD%D1%82%D0%B5%D0%B8%CC%86%D0%BD%D0%B5%D1%80+2.png" style="top:90px; right:-20px; width:90px; transform:rotate(-8deg);" alt="">
+      <img src="https://static-image-2.s3.us-west-1.amazonaws.com/temp/%D0%B3%D0%B0%D0%B8%CC%86%D0%BA%D0%B8+2.png" style="bottom:10px; right:10px; width:60px; transform:rotate(20deg);" alt="">
+    </div>
     <div class="modal-head">
       <div>
         <h3 id="mArtist"></h3>
@@ -224,18 +238,15 @@
 
 <footer>
   <div class="thanks">✨ HOPE YOU HAD A GREAT TIME ✨</div>
-  <div class="partner-logos">
-    <img src="uklon.png" alt="Uklon" class="partner-logo">
-  </div>
 </footer>
 
 <script>
 /* TEST MODE: sat = today, sun = tomorrow — for live real-time testing. Change back to real festival dates before launch. */
-const DAY_DATES = { sat: '2026-08-10', sun: '2026-08-11' };
+const DAY_DATES = { sat: '2026-08-13', sun: '2026-08-14' };
 
 const VENUES = ['ALL','Depo','Pavilion 4','Garden','Black Box','Angar','Audience','New One'];
 const VENUE_COLOR = {
-  'ALL':'#cfff3d',
+  'ALL':'#39ff14',
   'Depo':'#ff6b4a','Pavilion 4':'#4ad9ff','Garden':'#22c55e','Black Box':'#c24aff',
   'Angar':'#ffd24a','Audience':'#ff4a8f','New One':'#5c7aff'
 };
