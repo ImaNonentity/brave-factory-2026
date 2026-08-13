@@ -161,6 +161,12 @@
   .modal h3{margin:0 0 6px; font-family:'Ermilov','Anton',sans-serif; font-size:22px;}
   .modal .sub{font-size:13px; color:var(--muted); display:flex; align-items:center; gap:8px; margin-bottom:12px;}
   .modal .desc{font-size:13px; color:var(--muted); font-style:italic;}
+  .linkchip{
+    font-size:12px; padding:6px 12px; border-radius:99px; border:1px solid var(--line);
+    background:rgba(255,255,255,0.06); color:var(--muted); text-decoration:none; font-weight:500;
+    transition:background .15s, color .15s;
+  }
+  .linkchip:hover{background:rgba(255,255,255,0.12); color:var(--text);}
   .modal .close{position:absolute; margin-left:auto;}
   .modal-head{display:flex; justify-content:space-between; align-items:flex-start;}
   .closebtn{background:none; border:none; color:var(--muted); font-size:18px; cursor:pointer; line-height:1;}
@@ -247,6 +253,7 @@
     </div>
     <button class="starbtn modal-star" id="mStar" aria-label="Toggle favorite">☆</button>
     <div class="desc" id="mDesc"></div>
+    <div id="mLinks" style="position:relative; z-index:1; display:flex; gap:8px; flex-wrap:wrap; margin-top:14px;"></div>
   </div>
 </div>
 
@@ -260,42 +267,110 @@
 /* TEST MODE: sat = today, sun = tomorrow — for live real-time testing. Change back to real festival dates before launch. */
 const DAY_DATES = { sat: '2026-08-13', sun: '2026-08-14' };
 
-const VENUES = ['ALL','Depo','Pavilion 4','Garden','Black Box','Angar','Audience','New One'];
+const VENUES = ['ALL','Depo','Garden','Black Box','Angar','Topka','Dvir'];
 const VENUE_COLOR = {
   'ALL':'#8eff03',
-  'Depo':'#ff6b4a','Pavilion 4':'#4ad9ff','Garden':'#22c55e','Black Box':'#c24aff',
-  'Angar':'#ffd24a','Audience':'#ff4a8f','New One':'#5c7aff'
+  'Depo':'#ff6b4a','Garden':'#22c55e','Black Box':'#c24aff',
+  'Angar':'#ffd24a','Topka':'#4ad9ff','Dvir':'#5c7aff'
 };
+
+// artist metadata: genre + links. Keys are normalized (lowercase, no "- live", no parens)
+const ARTIST_INFO = {
+  'mezerg':{genre:'Tech House, Acid Techno', sc:'https://soundcloud.com/mezerg', yt:'https://youtu.be/iCRmTiMZap4', ig:'https://www.instagram.com/mezerg/'},
+  'si process':{genre:'Electro, Breakbeat, Techno', sc:'https://soundcloud.com/si_process', yt:'https://www.youtube.com/watch?v=y5QCHAn9k8A', ig:'https://www.instagram.com/si_process/'},
+  'sigmund friends':{genre:'Contemporary jazz, Fusion', sc:'https://soundcloud.com/sigmundfriends', yt:'https://www.youtube.com/watch?v=XOBUoit1zWk', ig:'https://www.instagram.com/sigmundfriends/'},
+  'thongvor':{genre:'Lo-fi House, Nu Disco, Synthpop', sc:'https://soundcloud.com/thongvor', yt:'https://www.youtube.com/watch?v=XBCAd_h7f4k', ig:'https://www.instagram.com/thongvor/'},
+  'wieloroman':{genre:'Minimal Techno, Deep House', sc:'https://soundcloud.com/wieloroman', yt:'https://www.youtube.com/watch?v=frD1ivYI400', ig:'https://www.instagram.com/wieloroman/'},
+  'yan shypula':{genre:'Rap, Hip-Hop', sc:'https://soundcloud.com/yan-shipula', yt:'https://www.youtube.com/shorts/pnr0oQoFGak', ig:'https://www.instagram.com/yan.shypula/'},
+  'andrey sirotkin':{genre:'Techno, Acid', sc:'https://soundcloud.com/andreysirotkin', yt:'https://www.youtube.com/watch?v=QKLEc8bVffU', ig:'https://www.instagram.com/andreysirotkin_/'},
+  'avc':{genre:'Minimal, House, Break Beat', sc:'https://soundcloud.com/alex-van-cool', ig:'https://www.instagram.com/avc.sound.ua/'},
+  'bambu':{genre:'Techno, House', sc:'https://soundcloud.com/fakedtuneslabel', yt:'https://www.youtube.com/watch?v=4xe_lq80ekw', ig:'https://www.instagram.com/bambu_closer'},
+  'blooms corda':{genre:'Indie-Rock, Jazz, Funk', sc:'https://soundcloud.com/blooms-corda', yt:'https://www.youtube.com/watch?v=gBeOOKTr9h8', ig:'https://www.instagram.com/blooms.corda/'},
+  'bogdan zaiets':{genre:'House, Acid, Ambient', sc:'https://soundcloud.com/bogdan_zaiets', yt:'https://www.youtube.com/watch?v=ASiri3lfcTg', ig:'https://www.instagram.com/_zaiets/'},
+  'borys':{genre:'House, Breakbeat', sc:'https://soundcloud.com/1borys', yt:'https://www.youtube.com/watch?v=leXADBbnbnc', ig:'https://www.instagram.com/borys_stepanenko/'},
+  'dust':{genre:'Techno, Electro, Acid', sc:'https://soundcloud.com/tumosatitas', yt:'https://www.youtube.com/watch?v=VG2wbwWDMSE', ig:'https://www.instagram.com/tumosa_/'},
+  'io mulen cheise':{genre:'House, Breakbeat', sc:'https://soundcloud.com/io-mulen', yt:'https://www.youtube.com/watch?v=jdZb__oNp3M', ig:'https://www.instagram.com/io_mulen/'},
+  'igor glushko':{genre:'Techno, House, Breakbeat', sc:'https://soundcloud.com/igor_glushko', yt:'https://www.youtube.com/watch?v=KA324x0iQrk', ig:'https://www.instagram.com/igor_glushko/'},
+  'j.richards':{genre:'House, Electro, Minimal, Techno', sc:'https://soundcloud.com/jelle-richards', yt:'https://www.youtube.com/watch?v=uS0JowhTGAQ', ig:'https://www.instagram.com/buhler_buhler_/'},
+  'k not k':{genre:'Synth-Pop, Disco, Retro-futurism', sc:'https://soundcloud.com/knotk', yt:'https://www.youtube.com/watch?v=_POH4nP6mPw', ig:'https://www.instagram.com/k.not.k/'},
+  'kinnota':{genre:'Indie-Pop', sc:'https://soundcloud.com/kinnota', yt:'https://www.youtube.com/watch?v=JVJdCyD5zqo', ig:'https://www.instagram.com/kinnota.music/'},
+  'lisovskyi':{genre:'Minimal Techno, House', sc:'https://soundcloud.com/lisovskyi', yt:'https://www.youtube.com/watch?v=fWL4Xldil2g', ig:'https://www.instagram.com/lisovskyiv/'},
+  'nizhna':{genre:''},
+  'ponura':{genre:'Dubstep, Garage, Electro', sc:'https://soundcloud.com/ponura', yt:'https://www.youtube.com/watch?v=5KM4MZi_AdY', ig:'https://www.instagram.com/yana.ponura'},
+  'ready in led':{genre:'Synth Disco, Futuristic Funk, Electro, Acid House', sc:'https://soundcloud.com/readyinled', yt:'https://www.youtube.com/watch?v=WEXiLy5hsEc', ig:'https://www.instagram.com/readyinled/'},
+  'roman k':{genre:'House, Disco', sc:'https://soundcloud.com/krimskyroman', yt:'https://www.youtube.com/watch?v=tYIk6bY30a8', ig:'https://www.instagram.com/krimsky_roman/'},
+  'seba korecky':{genre:'Disco, Funk, House', sc:'https://soundcloud.com/sebakorecky', yt:'https://www.youtube.com/watch?v=_DXm8zRw4v4', ig:'https://www.instagram.com/seba_korecky/'},
+  'nota club':{genre:'Disco, Indie-Pop', sc:'https://soundcloud.com/notaclub', yt:'https://www.youtube.com/watch?v=zRhoFasONes', ig:'https://www.instagram.com/notaclub_/'},
+  'serge jazzmate':{genre:'House, Techno, Disco', sc:'https://soundcloud.com/sergejazzmate', yt:'https://www.youtube.com/watch?v=lnctgialMW0', ig:'https://www.instagram.com/sergejazzmate/'},
+  'bellis':{genre:'Electro, Experimental', sc:'https://soundcloud.com/im_bellis', yt:'https://www.youtube.com/watch?v=n1Xomvk6nog', ig:'https://www.instagram.com/im_bellis_'},
+  'sheetel':{genre:'Dark-Hop, Piano-grunge, Art-Rock', sc:'https://soundcloud.com/sheetelband', yt:'https://www.youtube.com/watch?v=cr4nIWP2Ve8', ig:'https://www.instagram.com/sheetelband/'},
+  'shults.sashaa':{genre:'House, Techno, Electro', sc:'https://soundcloud.com/shultssashaa', yt:'https://www.youtube.com/watch?v=wXR0B1binLI', ig:'https://www.instagram.com/shults.sashaa/'},
+  'vesnavoseny':{genre:'Indie-Pop, Hyperpop, Alternative', yt:'https://www.youtube.com/watch?v=_y4pHvlkCCw', ig:'https://www.instagram.com/vesnavoseny/'},
+  'tik tu':{genre:'Indie-Pop, Synth-Pop', sc:'https://soundcloud.com/tiktu', yt:'https://www.youtube.com/watch?v=b4wsiThRVz4', ig:'https://www.instagram.com/tiktu.music/'},
+  'anna haleta':{genre:'House, Techno, Electro', sc:'https://soundcloud.com/annahaleta', yt:'https://www.youtube.com/watch?v=cgi6Kw2WlMg', ig:'https://www.instagram.com/annahaletadj/'},
+  'batu':{genre:'UK Bass, Post-Dubstep, Techno', sc:'https://soundcloud.com/batuuk', yt:'https://www.youtube.com/watch?v=j8Ni3HskCnc', ig:'https://www.instagram.com/batu_timedance/'},
+  'c.a.r.':{genre:'Synth-Pop, Post-Punk, Cold Wave', sc:'https://soundcloud.com/c_a_r', yt:'https://www.youtube.com/watch?v=toDtaSlyMOs', ig:'https://www.instagram.com/c.a.r.music/'},
+  'dj masda':{genre:'Early Techno, Futurist Electro, House', sc:'https://soundcloud.com/hauznated', yt:'https://www.youtube.com/watch?v=YC89Bus2xto', ig:'https://www.instagram.com/hauznated/'},
+  'heavenphetamine':{genre:'Psychedelic Rock, Post-Punk, Acid House', sc:'https://soundcloud.com/heavenphetamine', yt:'https://www.youtube.com/watch?v=XGwDSBdc4to', ig:'https://www.instagram.com/heavenphetamine/'},
+  'marco shuttle':{genre:'Minimal Techno, Ambient Techno, Techno', sc:'https://soundcloud.com/marco_shuttle', yt:'https://www.youtube.com/watch?v=9aohuB66wCk', ig:'https://www.instagram.com/marcoshuttle/'},
+  'ohm hourani':{genre:'Minimal House, Tech House', sc:'https://soundcloud.com/ohm-1', yt:'https://www.youtube.com/watch?v=achRYFy3Lns', ig:'https://www.instagram.com/ohmhourani/'},
+  'unai trotti':{genre:'Minimal/deep Tech, Microhouse, Electro', sc:'https://soundcloud.com/unai-trotti', yt:'https://www.youtube.com/watch?v=ytvR7Y5d_lY', ig:'https://www.instagram.com/unai_trotti/'},
+  'wallace':{genre:'House, Techno, Electronica', sc:'https://soundcloud.com/wallacejimmygs', yt:'https://www.youtube.com/watch?v=6dnPgjwtLV8', ig:'https://www.instagram.com/wallacejimmygs/'},
+  'sweely':{genre:'House, Minimal, Electro', sc:'https://soundcloud.com/sweelymusic', yt:'https://www.youtube.com/watch?v=aiERUkKKxHg', ig:'https://www.instagram.com/sweely_music/'},
+  'acid pauli':{genre:'Organic house, Downtempo, Electronica', sc:'https://soundcloud.com/acidpauli', yt:'https://www.youtube.com/watch?v=8P1IxZaqlJs', ig:'https://www.instagram.com/therealacidpauli/'},
+  'viken arman':{genre:'Jazz, House, Minimal, Hip Hop', sc:'https://soundcloud.com/vikenarman', ig:'https://www.instagram.com/vikenarman/'}
+};
+
+function normalizeArtist(name){
+  return name.toLowerCase()
+    .replace(/\s*-\s*live/gi,'')
+    .replace(/\([^)]*\)/g,'')
+    .replace(/[.&]/g,' ')
+    .replace(/\s+/g,' ')
+    .trim();
+}
+
+function lookupArtistInfo(artist){
+  const norm = normalizeArtist(artist);
+  if(ARTIST_INFO[norm]) return ARTIST_INFO[norm];
+  // fuzzy: try matching by first word/key fragment
+  const keys = Object.keys(ARTIST_INFO);
+  const hit = keys.find(k => norm.includes(k) || k.includes(norm));
+  return hit ? ARTIST_INFO[hit] : null;
+}
 
 const RAW = {
   sat: [
     ['13:00','Depo','Lisovskyi'],['16:00','Depo','Unai Trotti'],
-    ['19:00','Depo','DUST - live (Trippsy & Tumosa)'],['20:00','Depo','Shults.Sashaa'],
-    ['17:00','Pavilion 4','vesnavoseny - live'],['18:00','Pavilion 4','Sheetel - live'],
-    ['19:00','Pavilion 4','Gertz Theatre - live'],['20:00','Pavilion 4','C.A.R. (UK) - live'],
-    ['21:00','Pavilion 4','Si Process - live'],
-    ['13:00','Garden','Gapon'],['15:30','Garden','Kinnota - live'],['16:30','Garden','Tik Tu - live'],
-    ['17:30','Garden','Nota Yanvarska'],['19:00','Garden','K not K (RO) - live'],
+    ['18:30','Depo','AVC - live'],['19:00','Depo','DUST - live (Trippsy & Tumosa)'],
+    ['20:00','Depo','Shults.Sashaa'],
+    ['14:00','Garden','Nota Yanvarska & Haathi'],['16:00','Garden','Kinnota - live'],
+    ['17:00','Garden','Tik Tu - live'],['18:00','Garden','Nota Yanvarska & Haathi'],
     ['20:00','Garden','Blooms Corda - live'],['21:00','Garden','Seba Korecky with NOTA CLÜB - live'],
-    ['15:00','Black Box','Monotronique'],['17:00','Black Box','Nizhna - live'],
-    ['18:00','Black Box','Ponura'],['20:00','Black Box','Batu'],
+    ['17:00','Black Box','Sigmund Friends - live'],['18:00','Black Box','K not K (RO) - live'],
+    ['19:00','Black Box','Si Process - live'],['20:00','Black Box','C.A.R. (UK) - live'],
+    ['21:00','Black Box','Monotronique pres. Mr. Procrastinator A/V Hybrid Set'],
     ['15:00','Angar','Katia Stieber'],['17:00','Angar','Serge Jazzmate & Bellis'],
-    ['21:00','Angar','Mezerg (FR) - live'],
-    ['18:30','Audience','AVC - live'],['19:30','Audience','Ohm Hourani (CA)'],
-    ['13:00','New One','Bambu'],['16:00','New One','J.Richards (USA)'],
+    ['20:00','Angar','The Hidden Element - live'],['21:00','Angar','Mezerg (FR) - live'],
+    ['15:00','Topka','Onshaivan'],['18:00','Topka','Native Outsider - live'],['19:00','Topka','Gapon'],
+    ['13:00','Dvir','Bambu'],['16:00','Dvir','J.Richards (USA)'],
+    ['18:30','Dvir','AVC - live'],['19:00','Dvir','DUST - live (Trippsy & Tumosa)'],
+    ['19:30','Dvir','Wallace (UK)'],
   ],
   sun: [
-    ['13:00','Depo','Karine'],['16:00','Depo','Igor Glushko & Roman K'],['19:00','Depo','Marco Shuttle (IT)'],
-    ['17:00','Pavilion 4','Yan Shypula - live'],['18:00','Pavilion 4','Heavenphetamine (JP) - live'],
-    ['19:00','Pavilion 4','Sigmund Friends - live'],['20:00','Pavilion 4','Sarathy Korwar Quartet (UK) - live'],
-    ['21:00','Pavilion 4','Ready in LED - live'],
-    ['13:00','Garden','Wieloroman'],['15:30','Garden','Patrice Scott'],
-    ['18:30','Garden','Wallace (UK)'],['21:00','Garden','Seba Koretsky'],
-    ['15:00','Black Box','Borys'],['18:30','Black Box','Bogdan Zaiets - live'],['19:30','Black Box','Dj Masda'],
-    ['15:00','Angar','Recid & Oles'],['17:30','Angar','Andrey Sirotkin - live'],
-    ['18:30','Angar','Anthony Rother - live'],['20:00','Angar','Anna Haleta & Alex Savage'],
-    ['19:30','Audience','iO (Mulen) b2b Cheise'],
-    ['14:00','New One','T.Fain (Vinaya)'],['17:30','New One','Thongwor - live'],['18:30','New One','Sweely (FR) - live'],
+    ['13:00','Depo','Karine'],['16:30','Depo','Igor Glushko & Roman K'],
+    ['18:30','Depo','vesnavoseny - live'],['19:00','Depo','Eric Cloutier'],
+    ['14:00','Garden','Wieloroman'],['16:30','Garden','Yan Shypula - live'],
+    ['17:30','Garden','Heavenphetamine (JP) - live'],['20:00','Garden','Sheetel - live'],
+    ['21:00','Garden','Ready in LED - live'],
+    ['15:00','Black Box','Borys'],['18:00','Black Box','Bogdan Zaiets - live'],
+    ['19:30','Black Box','Dj Masda'],
+    ['15:00','Angar','Recid'],['17:30','Angar','Andrey Sirotkin - live'],
+    ['18:30','Angar','Regal 86'],['20:30','Angar','Anna Haleta & Alex Savage'],
+    ['15:00','Topka','Ecce Lizard'],['18:00','Topka','Nizhna - live'],['19:00','Topka','Toma Kami (FR)'],
+    ['13:00','Dvir','T.Fain (Vinaya)'],['16:30','Dvir','Roman Kosh - live'],
+    ['17:30','Dvir','Thongwor - live'],['18:30','Dvir','Sweely (FR) - live'],
+    ['19:30','Dvir','iO (Mulen) b2b Cheise'],
   ]
 };
 
@@ -343,10 +418,7 @@ function sameVenueSorted(day, venue){
 }
 
 function endTimeStr(time){
-  let [h,m] = time.split(':').map(Number);
-  m += 75; h += Math.floor(m/60); m%=60;
-  if(h>22){h=22;m=0;}
-  return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+  return '22:00';
 }
 
 function getEnd(ev, day){
@@ -430,7 +502,20 @@ function openModal(ev){
   state.modalEvent = ev;
   document.getElementById('mArtist').textContent = ev.artist;
   document.getElementById('mSub').innerHTML = `<span>${getRange(ev,state.day)}</span><span>·</span><span>${ev.venue}</span>${typeIconHTML(ev.type)}`;
-  document.getElementById('mDesc').textContent = ev.type==='live' ? 'Live set.' : 'DJ set.';
+  const info = lookupArtistInfo(ev.artist);
+  let descHTML = ev.type==='live' ? 'Live set.' : 'DJ set.';
+  if(info && info.genre){
+    descHTML += `<div style="margin-top:6px; color:var(--text); font-style:normal;">${info.genre}</div>`;
+  }
+  document.getElementById('mDesc').innerHTML = descHTML;
+
+  const linksEl = document.getElementById('mLinks');
+  let linksHTML = '';
+  if(info && info.sc) linksHTML += `<a href="${info.sc}" target="_blank" rel="noopener" class="linkchip sc">SoundCloud</a>`;
+  if(info && info.ig) linksHTML += `<a href="${info.ig}" target="_blank" rel="noopener" class="linkchip ig">Instagram</a>`;
+  if(info && info.yt) linksHTML += `<a href="${info.yt}" target="_blank" rel="noopener" class="linkchip yt">YouTube</a>`;
+  linksEl.innerHTML = linksHTML;
+
   const isFav = favs.has(favId(state.day, ev));
   const mStar = document.getElementById('mStar');
   mStar.textContent = isFav ? '★' : '☆';
