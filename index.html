@@ -61,7 +61,8 @@
     white-space:nowrap; min-width:0; flex:0 1 auto;
     font-family:'Ermilov','Anton',sans-serif; text-transform:uppercase; letter-spacing:.01em;
   }
-  .logo-img{width:100%; height:auto; display:block;}
+  .logo-wrap{overflow:hidden; width:100%;}
+  .logo-img{width:110%; margin-left:-5%; height:auto; display:block;}
   .clock{font-size:10px; color:var(--text); font-family:monospace; white-space:nowrap; background:rgba(10,10,12,0.6); padding:4px 8px; border-radius:6px;}
   .daytabs{display:flex; background:var(--panel2); border-radius:8px; padding:3px; gap:3px; flex:none;}
   .daytab{
@@ -74,7 +75,12 @@
     .daytab{padding:6px 9px; font-size:11px;}
   }
 
-  .filters{display:flex; flex-wrap:wrap; justify-content:space-between; gap:10px; align-items:center;}
+  .filters{
+    display:flex; flex-wrap:wrap; justify-content:space-between; gap:10px; align-items:center;
+    margin-top:-28px; position:relative; z-index:2;
+    background:linear-gradient(to top, rgba(10,10,12,0.85), transparent);
+    padding-top:24px;
+  }
   .venues{display:flex; flex-wrap:wrap; gap:6px;}
   .vbtn{
     font-size:12px; padding:4px 8px; border-radius:99px; border:1px solid var(--line);
@@ -189,12 +195,20 @@
     .partner-logo{max-height:36px; max-width:110px;}
   }
 </style>
+<link rel="preload" as="image" href="https://static-image-2.s3.us-west-1.amazonaws.com/temp/%D0%97%D0%BD%D0%B0%D0%BA+2.png">
+<link rel="preload" as="image" href="https://static-image-2.s3.us-west-1.amazonaws.com/temp/%D0%A0%D0%B6%D0%B0%D0%B2%D0%B0+%D0%B1%D0%B0%D0%BB%D0%BA%D0%B0+2.png">
+<link rel="preload" as="image" href="https://static-image-2.s3.us-west-1.amazonaws.com/temp/%D0%BA%D0%B0%D0%BC%D1%96%D0%BD%D1%8C+%D1%80%D0%B6%D0%B0%D0%B2%D0%B8%D0%B8%CC%86+2.png">
+<link rel="preload" as="image" href="https://static-image-2.s3.us-west-1.amazonaws.com/temp/%D1%82%D1%80%D1%83%D0%B1%D0%B0+2.png">
+<link rel="preload" as="image" href="https://static-image-2.s3.us-west-1.amazonaws.com/temp/%D0%93%D1%80%D0%B0%D0%BD%D1%96%D1%82+%D0%9A%D0%B0%D0%BC%D1%96%D0%BD%D1%8C+2.png">
+<link rel="preload" as="image" href="https://static-image-2.s3.us-west-1.amazonaws.com/temp/%D0%9A%D0%BE%D0%BD%D1%82%D0%B5%D0%B8%CC%86%D0%BD%D0%B5%D1%80+2.png">
+<link rel="preload" as="image" href="https://static-image-2.s3.us-west-1.amazonaws.com/temp/%D0%9A%D0%BE%D0%BD%D1%82%D0%B5%D0%B8%CC%86%D0%BD%D0%B5%D1%80+%D1%81%D0%B8%D0%BD%D1%96%D0%B8%CC%86+2.png">
+<link rel="preload" as="image" href="https://static-image-2.s3.us-west-1.amazonaws.com/temp/%D0%B3%D0%B0%D0%B8%CC%86%D0%BA%D0%B8+2.png">
 </head>
 <body>
 
 <header>
   <div class="headtop">
-    <img src="https://static-image-2.s3.us-west-1.amazonaws.com/BRAVE+FESTIVAL_schedule_2026_2_2.png" alt="BRAVE! FACTORY" class="logo-img">
+    <div class="logo-wrap"><img src="https://static-image-2.s3.us-west-1.amazonaws.com/BRAVE+FESTIVAL_schedule_2026_2_2.png" alt="BRAVE! FACTORY" class="logo-img"></div>
     <div class="headtop-right">
       <span class="clock" id="clock"></span>
       <div class="daytabs">
@@ -383,6 +397,9 @@ const DECOR_IMG = {
   containerBlue: "https://static-image-2.s3.us-west-1.amazonaws.com/temp/%D0%9A%D0%BE%D0%BD%D1%82%D0%B5%D0%B8%CC%86%D0%BD%D0%B5%D1%80+%D1%81%D0%B8%D0%BD%D1%96%D0%B8%CC%86+2.png",
   gaiky: "https://static-image-2.s3.us-west-1.amazonaws.com/temp/%D0%B3%D0%B0%D0%B8%CC%86%D0%BA%D0%B8+2.png"
 };
+
+// warm the browser cache immediately so modal images appear instantly on open
+Object.values(DECOR_IMG).forEach(src=>{ const img = new Image(); img.src = src; });
 
 // each decor set = array of {src, style}. gaiky+truba kept together as a pair.
 const DECOR_SETS = [
