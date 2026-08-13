@@ -583,9 +583,9 @@ function renderModalDecor(){
 function openModal(ev){
   state.modalEvent = ev;
   document.getElementById('mArtist').textContent = ev.artist;
-  document.getElementById('mSub').innerHTML = `<span>${getRange(ev,state.day)}</span><span>·</span><span>${ev.venue}</span>${typeIconHTML(ev.type)}`;
+  document.getElementById('mSub').innerHTML = `<span>${getRange(ev,state.day)}</span><span>·</span><span>${ev.venue}</span>${typeIconHTML(ev.type)}<span>${ev.type==='live'?'Live':'DJ set'}</span>`;
   const members = lookupArtists(ev.artist);
-  document.getElementById('mDesc').textContent = ev.type==='live' ? 'Live set.' : 'DJ set.';
+  document.getElementById('mDesc').textContent = '';
 
   const linksEl = document.getElementById('mLinks');
   const single = members.length <= 1;
