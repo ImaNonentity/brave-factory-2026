@@ -81,7 +81,8 @@
     background:linear-gradient(to top, rgba(10,10,12,0.85), transparent);
     padding-top:24px;
   }
-  .venues{display:flex; flex-wrap:wrap; gap:6px;}
+  .venues{display:grid; grid-template-columns:repeat(4, 1fr); gap:6px;}
+  .venues .vbtn{width:100%;}
   .vbtn{
     font-size:12px; padding:4px 8px; border-radius:99px; border:1px solid var(--line);
     background:rgba(19,19,24,0.5); color:var(--muted); cursor:pointer;
