@@ -36,7 +36,7 @@
   body::before{
     content:'';
     position:fixed; top:0; left:0; width:100%; z-index:-1;
-    height:100vh; height:100svh;
+    height:100vh; height:100svh; height:var(--vh-lock, 100svh);
     background:
       radial-gradient(ellipse 900px 500px at 15% -10%, rgba(142,255,3,0.06), transparent 60%),
       radial-gradient(ellipse 700px 500px at 100% 0%, rgba(74,217,255,0.05), transparent 60%),
@@ -263,6 +263,22 @@
   <div class="thanks" style="position:relative; z-index:1;">✨ HOPE YOU HAD A GREAT TIME ✨</div>
 </footer>
 
+<script>
+/* lock background height against mobile browser chrome show/hide jank */
+(function(){
+  let lastWidth = window.innerWidth;
+  function lockHeight(){
+    document.documentElement.style.setProperty('--vh-lock', window.innerHeight + 'px');
+    lastWidth = window.innerWidth;
+  }
+  lockHeight();
+  window.addEventListener('resize', function(){
+    // only re-measure on a genuine width change (orientation/device change),
+    // not on height-only changes caused by the address bar collapsing/expanding
+    if(window.innerWidth !== lastWidth) lockHeight();
+  });
+})();
+</script>
 <script>
 /* TEST MODE: sat = today, sun = tomorrow — for live real-time testing. Change back to real festival dates before launch. */
 const DAY_DATES = { sat: '2026-08-13', sun: '2026-08-14' };
