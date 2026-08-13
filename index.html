@@ -255,7 +255,7 @@
     </div>
     <button class="starbtn modal-star" id="mStar" aria-label="Toggle favorite">☆</button>
     <div class="desc" id="mDesc"></div>
-    <div id="mLinks" style="position:relative; z-index:1; display:flex; gap:8px; flex-wrap:wrap; margin-top:14px;"></div>
+    <div id="mLinks" style="position:relative; z-index:1; margin-top:10px;"></div>
   </div>
 </div>
 
@@ -314,8 +314,10 @@ const ARTIST_INFO = {
   'blooms corda':{genre:'Indie-Rock, Jazz, Funk', sc:'https://soundcloud.com/blooms-corda', yt:'https://www.youtube.com/watch?v=gBeOOKTr9h8', ig:'https://www.instagram.com/blooms.corda/'},
   'bogdan zaiets':{genre:'House, Acid, Ambient', sc:'https://soundcloud.com/bogdan_zaiets', yt:'https://www.youtube.com/watch?v=ASiri3lfcTg', ig:'https://www.instagram.com/_zaiets/'},
   'borys':{genre:'House, Breakbeat', sc:'https://soundcloud.com/1borys', yt:'https://www.youtube.com/watch?v=leXADBbnbnc', ig:'https://www.instagram.com/borys_stepanenko/'},
-  'dust':{genre:'Techno, Electro, Acid', sc:'https://soundcloud.com/tumosatitas', yt:'https://www.youtube.com/watch?v=VG2wbwWDMSE', ig:'https://www.instagram.com/tumosa_/'},
-  'io mulen cheise':{genre:'House, Breakbeat', sc:'https://soundcloud.com/io-mulen', yt:'https://www.youtube.com/watch?v=jdZb__oNp3M', ig:'https://www.instagram.com/io_mulen/'},
+  'tumosa':{genre:'Techno, Electro, Acid', sc:'https://soundcloud.com/tumosatitas', yt:'https://www.youtube.com/watch?v=VG2wbwWDMSE', ig:'https://www.instagram.com/tumosa_/'},
+  'trippsy':{genre:'House, Techno, Electro', sc:'https://soundcloud.com/trippsylt', yt:'https://www.youtube.com/watch?v=k9L44LU-dd8', ig:'https://www.instagram.com/karolistrippsy/'},
+  'io mulen':{genre:'House, Breakbeat', sc:'https://soundcloud.com/io-mulen', yt:'https://www.youtube.com/watch?v=jdZb__oNp3M', ig:'https://www.instagram.com/io_mulen/'},
+  'cheise':{genre:'House', sc:'https://soundcloud.com/cheise', yt:'https://www.youtube.com/watch?v=34waiypBL4E', ig:'https://www.instagram.com/cheise_illia'},
   'igor glushko':{genre:'Techno, House, Breakbeat', sc:'https://soundcloud.com/igor_glushko', yt:'https://www.youtube.com/watch?v=KA324x0iQrk', ig:'https://www.instagram.com/igor_glushko/'},
   'j richards':{genre:'House, Electro, Minimal, Techno', sc:'https://soundcloud.com/jelle-richards', yt:'https://www.youtube.com/watch?v=uS0JowhTGAQ', ig:'https://www.instagram.com/buhler_buhler_/'},
   'k not k':{genre:'Synth-Pop, Disco, Retro-futurism', sc:'https://soundcloud.com/knotk', yt:'https://www.youtube.com/watch?v=_POH4nP6mPw', ig:'https://www.instagram.com/k.not.k/'},
@@ -364,6 +366,27 @@ function lookupArtistInfo(artist){
   const keys = Object.keys(ARTIST_INFO);
   const hit = keys.find(k => norm.includes(k) || k.includes(norm));
   return hit ? ARTIST_INFO[hit] : null;
+}
+
+// known b2b / duo / collab bookings: schedule entry -> [{label, key}, ...]
+const DUO_MAP = {
+  'dust trippsy tumosa':[{label:'Tumosa', key:'tumosa'},{label:'Trippsy', key:'trippsy'}],
+  'seba korecky with nota club':[{label:'Seba Korecky', key:'seba korecky'},{label:'NOTA CLÜB', key:'nota club'}],
+  'serge jazzmate bellis':[{label:'Serge Jazzmate', key:'serge jazzmate'},{label:'Bèllis', key:'bellis'}],
+  'io mulen b2b cheise':[{label:'iO (Mulen)', key:'io mulen'},{label:'Cheise', key:'cheise'}],
+  'acid pauli de viken arman fr':[{label:'Acid Pauli', key:'acid pauli'},{label:'Viken Arman', key:'viken arman'}]
+};
+
+function lookupArtists(artist){
+  const norm = normalizeArtist(artist);
+  const duoKey = Object.keys(DUO_MAP).find(k => norm.includes(k) || k.includes(norm));
+  if(duoKey){
+    return DUO_MAP[duoKey]
+      .map(m => ({label:m.label, info:ARTIST_INFO[m.key]}))
+      .filter(m => m.info);
+  }
+  const info = lookupArtistInfo(artist);
+  return info ? [{label:null, info}] : [];
 }
 
 const RAW = {
@@ -561,19 +584,22 @@ function openModal(ev){
   state.modalEvent = ev;
   document.getElementById('mArtist').textContent = ev.artist;
   document.getElementById('mSub').innerHTML = `<span>${getRange(ev,state.day)}</span><span>·</span><span>${ev.venue}</span>${typeIconHTML(ev.type)}`;
-  const info = lookupArtistInfo(ev.artist);
-  let descHTML = ev.type==='live' ? 'Live set.' : 'DJ set.';
-  if(info && info.genre){
-    descHTML += `<div style="margin-top:6px; color:var(--text); font-style:normal;">${info.genre}</div>`;
-  }
-  document.getElementById('mDesc').innerHTML = descHTML;
+  const members = lookupArtists(ev.artist);
+  document.getElementById('mDesc').textContent = ev.type==='live' ? 'Live set.' : 'DJ set.';
 
   const linksEl = document.getElementById('mLinks');
-  let linksHTML = '';
-  if(info && info.sc) linksHTML += `<a href="${info.sc}" target="_blank" rel="noopener" class="linkchip sc">SoundCloud</a>`;
-  if(info && info.ig) linksHTML += `<a href="${info.ig}" target="_blank" rel="noopener" class="linkchip ig">Instagram</a>`;
-  if(info && info.yt) linksHTML += `<a href="${info.yt}" target="_blank" rel="noopener" class="linkchip yt">YouTube</a>`;
-  linksEl.innerHTML = linksHTML;
+  const single = members.length <= 1;
+  const groupHTML = members.map(m=>{
+    let chips = '';
+    if(m.info.sc) chips += `<a href="${m.info.sc}" target="_blank" rel="noopener" class="linkchip sc">SoundCloud</a>`;
+    if(m.info.ig) chips += `<a href="${m.info.ig}" target="_blank" rel="noopener" class="linkchip ig">Instagram</a>`;
+    if(m.info.yt) chips += `<a href="${m.info.yt}" target="_blank" rel="noopener" class="linkchip yt">YouTube</a>`;
+    if(!chips && !m.info.genre) return '';
+    const nameHTML = (!single && m.label) ? `<div style="font-weight:600; font-size:13px; color:var(--text); margin-bottom:2px;">${m.label}</div>` : '';
+    const genreHTML = m.info.genre ? `<div style="font-size:12px; color:var(--muted); margin-bottom:6px;">${m.info.genre}</div>` : '';
+    return `<div style="margin-top:12px;">${nameHTML}${genreHTML}<div style="display:flex; gap:8px; flex-wrap:wrap;">${chips}</div></div>`;
+  }).join('');
+  linksEl.innerHTML = groupHTML;
 
   const isFav = favs.has(favId(state.day, ev));
   const mStar = document.getElementById('mStar');
