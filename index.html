@@ -338,38 +338,69 @@ function lookupArtistInfo(artist){
   const hit = keys.find(k => norm.includes(k) || k.includes(norm));
   return hit ? ARTIST_INFO[hit] : null;
 }
-
 const RAW = {
   sat: [
-    ['13:00','Depo','Lisovskyi'],['16:00','Depo','Unai Trotti'],
-    ['18:30','Depo','AVC - live'],['19:00','Depo','DUST - live (Trippsy & Tumosa)'],
+    /// DEPO
+    ['13:00','Depo','Lisovskyi'],
+    ['16:00','Depo','Unai Trotti'],
+    ['19:00','Depo','DUST - live (Trippsy & Tumosa)'],
     ['20:00','Depo','Shults.Sashaa'],
-    ['14:00','Garden','Nota Yanvarska & Haathi'],['16:00','Garden','Kinnota - live'],
-    ['17:00','Garden','Tik Tu - live'],['18:00','Garden','Nota Yanvarska & Haathi'],
-    ['20:00','Garden','Blooms Corda - live'],['21:00','Garden','Seba Korecky with NOTA CLÜB - live'],
-    ['17:00','Black Box','Sigmund Friends - live'],['18:00','Black Box','K not K (RO) - live'],
-    ['19:00','Black Box','Si Process - live'],['20:00','Black Box','C.A.R. (UK) - live'],
+    /// GARDEN
+    ['14:00','Garden','Nota Yanvarska & Haathi'],
+    ['16:00','Garden','Kinnota - live'],
+    ['17:00','Garden','Blooms Corda - live'],
+    ['18:00','Garden','Nota Yanvarska & Haathi'],
+    ['20:00','Garden','Tik Tu - live'],
+    ['21:00','Garden','Seba Korecky with NOTA CLÜB - live'],
+    /// BLACK BOX
+    ['17:00','Black Box','Sigmund Friends - live'],
+    ['18:00','Black Box','K not K (RO) - live'],
+    ['19:00','Black Box','Si Process - live'],
+    ['20:00','Black Box','C.A.R. (UK) - live'],
     ['21:00','Black Box','Monotronique pres. Mr. Procrastinator A/V Hybrid Set'],
-    ['15:00','Angar','Katia Stieber'],['17:00','Angar','Serge Jazzmate & Bellis'],
-    ['20:00','Angar','The Hidden Element - live'],['21:00','Angar','Mezerg (FR) - live'],
-    ['15:00','Topka','Onshaivan'],['18:00','Topka','Native Outsider - live'],['19:00','Topka','Gapon'],
-    ['13:00','Dvir','Bambu'],['16:00','Dvir','J.Richards (USA)'],
-    ['18:30','Dvir','AVC - live'],['19:00','Dvir','DUST - live (Trippsy & Tumosa)'],
+    /// ANGAR
+    ['15:00','Angar','Katia Stieber'],
+    ['17:00','Angar','Serge Jazzmate & Bellis'],
+    ['20:00','Angar','The Hidden Element - live'],
+    ['21:00','Angar','Mezerg (FR) - live'],
+    /// TOPKA
+    ['15:00','Topka','Onshaivan'],
+    ['18:00','Topka','Native Outsider - live'],
+    ['19:00','Topka','Gapon'],
+    /// DVIR
+    ['13:00','Dvir','Bambu'],
+    ['16:00','Dvir','J.Richards (USA)'],
+    ['18:30','Dvir','AVC - live'],
     ['19:30','Dvir','Wallace (UK)'],
   ],
   sun: [
-    ['13:00','Depo','Karine'],['16:30','Depo','Igor Glushko & Roman K'],
-    ['18:30','Depo','vesnavoseny - live'],['19:00','Depo','Eric Cloutier'],
-    ['14:00','Garden','Wieloroman'],['16:30','Garden','Yan Shypula - live'],
-    ['17:30','Garden','Heavenphetamine (JP) - live'],['20:00','Garden','Sheetel - live'],
+    /// DEPO
+    ['16:30','Depo','Igor Glushko & Roman K'],
+    ['19:00','Depo','Eric Cloutier'],
+    /// GARDEN
+    ['14:00','Garden','Wieloroman'],
+    ['16:30','Garden','Yan Shypula - live'],
+    ['17:30','Garden','Heavenphetamine (JP) - live'],
+    ['18:30','Garden','vesnavoseny - live'],
+    ['20:00','Garden','Sheetel - live'],
     ['21:00','Garden','Ready in LED - live'],
-    ['15:00','Black Box','Borys'],['18:00','Black Box','Bogdan Zaiets - live'],
+    /// BLACK BOX
+    ['15:00','Black Box','Borys'],
+    ['18:00','Black Box','Bogdan Zaiets - live'],
     ['19:30','Black Box','Dj Masda'],
-    ['15:00','Angar','Recid'],['17:30','Angar','Andrey Sirotkin - live'],
-    ['18:30','Angar','Regal 86'],['20:30','Angar','Anna Haleta & Alex Savage'],
-    ['15:00','Topka','Ecce Lizard'],['18:00','Topka','Nizhna - live'],['19:00','Topka','Toma Kami (FR)'],
-    ['13:00','Dvir','T.Fain (Vinaya)'],['16:30','Dvir','Roman Kosh - live'],
-    ['17:30','Dvir','Thongwor - live'],['18:30','Dvir','Sweely (FR) - live'],
+    ///ANGAR
+    ['15:00','Angar','Recid'],
+    ['17:30','Angar','Andrey Sirotkin - live'],
+    ['18:30','Angar','Regal 86'],
+    ['20:30','Angar','Anna Haleta & Alex Savage'],
+    /// TOPKA
+    ['15:00','Topka','Ecce Lizard'],
+    ['18:00','Topka','Nizhna - live'],
+    ['19:00','Topka','Toma Kami (FR)'],
+    /// DVIR
+    ['16:30','Dvir','Roman Kosh - live'],
+    ['17:30','Dvir','Thongwor - live'],
+    ['18:30','Dvir','Sweely (FR) - live'],
     ['19:30','Dvir','iO (Mulen) b2b Cheise'],
   ]
 };
