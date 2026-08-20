@@ -371,8 +371,23 @@ const ARTIST_INFO = {
 
 function normalizeArtist(name){
   return name.toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
     .replace(/\s*-\s*live/gi,'')
     .replace(/\([^)]*\)/g,'')
+    .replace(/\bb2b\b/gi,' ')
+    .replace(/[.&]/g,' ')
+    .replace(/\s+/g,' ')
+    .trim();
+}
+
+// softer normalization for duo/b2b matching: keeps content inside parens
+// (e.g. member names like "(Mulen)", "(Trippsy & Tumosa)"), just drops the
+// parens characters themselves, so nothing gets silently discarded.
+function normalizeForDuo(name){
+  return name.toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/\s*-\s*live/gi,'')
+    .replace(/[()]/g,' ')
     .replace(/\bb2b\b/gi,' ')
     .replace(/[.&]/g,' ')
     .replace(/\s+/g,' ')
@@ -389,17 +404,18 @@ function lookupArtistInfo(artist){
 }
 
 // known b2b / duo / collab bookings: schedule entry -> [{label, key}, ...]
+// keys here are written in normalizeForDuo() form (parens content kept, just unwrapped)
 const DUO_MAP = {
-  'dust trippsy tumosa':[{label:'Tumosa', key:'tumosa'},{label:'Trippsy', key:'trippsy'}],
+  'dust lt trippsy tumosa':[{label:'Tumosa', key:'tumosa'},{label:'Trippsy', key:'trippsy'}],
   'seba korecky with nota club':[{label:'Seba Korecky', key:'seba korecky'},{label:'NOTA CLÜB', key:'nota club'}],
   'serge jazzmate bellis':[{label:'Serge Jazzmate', key:'serge jazzmate'},{label:'Bèllis', key:'bellis'}],
-  'io mulen b2b cheise':[{label:'iO (Mulen)', key:'io mulen'},{label:'Cheise', key:'cheise'}],
+  'io mulen cheise':[{label:'iO (Mulen)', key:'io mulen'},{label:'Cheise', key:'cheise'}],
   'acid pauli de viken arman fr':[{label:'Acid Pauli', key:'acid pauli'},{label:'Viken Arman', key:'viken arman'}]
 };
 
 function lookupArtists(artist){
-  const norm = normalizeArtist(artist);
-  const duoKey = Object.keys(DUO_MAP).find(k => norm.includes(k) || k.includes(norm));
+  const normDuo = normalizeForDuo(artist);
+  const duoKey = Object.keys(DUO_MAP).find(k => normDuo.includes(k) || k.includes(normDuo));
   if(duoKey){
     return DUO_MAP[duoKey]
       .map(m => ({label:m.label, info:ARTIST_INFO[m.key]}))
