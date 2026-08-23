@@ -507,7 +507,16 @@ function buildData(){
 }
 const DATA = buildData();
 
-let state = { day:'sat', venue:'ALL', hidePast:true, modalEvent:null, favOnly:false };
+function getDefaultDay(){
+  const now = new Date();
+  const pad = n => String(n).padStart(2,'0');
+  const todayStr = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
+  if(DAY_DATES.sun === todayStr) return 'sun';
+  if(DAY_DATES.sat === todayStr) return 'sat';
+  return 'sat';
+}
+
+let state = { day:getDefaultDay(), venue:'ALL', hidePast:true, modalEvent:null, favOnly:false };
 
 /* --- favorites (starred artists), persisted in localStorage --- */
 const FAV_KEY = 'brave_factory_favs';
@@ -755,6 +764,8 @@ document.getElementById('mStar').addEventListener('click', ()=>{
 });
 
 document.getElementById('modalBg').addEventListener('click', (e)=>{ if(e.target.id==='modalBg') e.target.classList.add('hidden'); });
+
+document.querySelectorAll('.daytab').forEach(b=>b.classList.toggle('active', b.dataset.day === state.day));
 
 setInterval(render, 60000);
 render();
